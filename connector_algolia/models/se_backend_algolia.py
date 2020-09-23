@@ -13,6 +13,7 @@ class SeBackendAlgolia(models.Model):
     _description = "Algolia Backend"
 
     _search_engine_name = "algolia"
+    _record_id_key = "objectID"
 
     # TODO: load values from server env
     algolia_app_id = fields.Char(string="APP ID")

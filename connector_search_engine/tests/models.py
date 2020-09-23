@@ -15,14 +15,14 @@ class SeBackendFake(models.Model, TestMixin):
     _inherit = "se.backend.spec.abstract"
     _description = "Unit Test SE Backend"
     _search_engine_name = "FakeSE"
+    _record_id_key = "id"
 
 
 class SeAdapterFake(Component):
     _name = "se.adapter.fake"
-    _inherit = "base.backend.adapter"
+    _inherit = "se.backend.adapter"
     _usage = "se.backend.adapter"
     _collection = SeBackendFake._name
-    _record_id_key = "id"
 
     def index(self, data):
         self._mocked_calls.append(
