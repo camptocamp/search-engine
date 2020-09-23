@@ -121,10 +121,17 @@ class SeBinding(models.AbstractModel):
     # TODO maybe we need to add lock (todo check)
     @job(default_channel="root.search_engine.recompute_json")
     def recompute_json(self, force_export=False):
+        """Compute index record data as JSON."""
+        # `sudo` because the recomputation can be triggered from everywhere
+        # (eg: an update of a product in the stock) and is not granted
+        # that the user triggering it has access to all required records
+        # (eg: se.backend or related records needed to compute index values).
+        # All in all, this is safe because the index data should always
+        # be the same no matter the access rights of the user triggering this.
         result = []
         validation_errors = []
         to_be_checked = []
-        for work in self._work_by_index():
+        for work in self.sudo()._work_by_index():
             mapper = work.component(usage="se.export.mapper")
             lang = work.index.lang_id.code
             for binding in work.records.with_context(lang=lang):
