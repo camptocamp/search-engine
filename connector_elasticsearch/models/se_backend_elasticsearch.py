@@ -11,6 +11,7 @@ class SeBackendElasticsearch(models.Model):
     _description = "Elasticsearch Backend"
 
     _search_engine_name = "elasticsearch"
+    _record_id_key = "objectID"
 
     es_server_host = fields.Char(string="ElasticSearch host")
 
