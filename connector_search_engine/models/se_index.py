@@ -17,7 +17,7 @@ class SeIndex(models.Model):
     backend_id = fields.Many2one(
         "se.backend", string="Backend", required=True, ondelete="cascade"
     )
-    lang_id = fields.Many2one("res.lang", string="Lang", required=True)
+    lang_id = fields.Many2one("res.lang", string="Lang", required=False)
     model_id = fields.Many2one(
         "ir.model",
         string="Model",
