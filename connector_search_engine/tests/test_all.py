@@ -152,6 +152,15 @@ class TestBindingIndex(TestBindingIndexBaseFake):
         # TODO: not sure why this is needed here
         self.se_index.invalidate_cache()
         self.assertEqual(self.se_index.name, "foo_baz_res_partner_binding_fake_en_US")
+        self.se_index.lang_id = False
+        self.se_index.invalidate_cache()
+        self.assertEqual(self.se_index.name, "foo_baz_res_partner_binding_fake")
+
+    def test_index_custom_name(self):
+        self.se_index.custom_tech_name = "something meaningful for me"
+        self.assertEqual(
+            self.se_index.name, "fake_se_something_meaningful_for_me_en_US"
+        )
 
     def test_changing_model_remove_exporter(self):
         res = self.se_index.onchange_model_id()
