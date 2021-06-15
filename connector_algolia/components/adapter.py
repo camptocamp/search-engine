@@ -65,11 +65,6 @@ class AlgoliaAdapter(Component):
         index.clear_objects()
         self.settings(force=True)
 
-    def iter(self):
-        # `iter` is a built-in keyword -> to be replaced
-        _logger.warning("DEPRECATED: use `each` instead of `iter`.")
-        return self.each()
-
     def each(self):
         index = self.get_index()
         return index.browse_objects()
