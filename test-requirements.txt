@@ -4,3 +4,6 @@ unidecode
 
 # tests
 vcrpy-unittest
+
+# Test search-engine with server.env.mixin changes https://github.com/OCA/server-env/pull/75
+odoo13-addon-server_environment @git+https://github.com/OCA/server-env@refs/pull/75/head#subdirectory=setup/server_environment
