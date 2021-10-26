@@ -7,7 +7,6 @@ import json
 import logging
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -64,6 +63,14 @@ class SeBinding(models.AbstractModel):
         """Public method to retrieve export data."""
         return self.data
 
+    def _is_indexed(self):
+        self.ensure_one()
+        if self.sync_state == "new":
+            return False
+        elif self.sync_state == "done" and not self.active:
+            return False
+        return True
+
     @api.model
     def create(self, vals):
         record = super(SeBinding, self).create(vals)
@@ -82,28 +89,17 @@ class SeBinding(models.AbstractModel):
         return res
 
     def unlink(self):
-        for record in self:
-            if record.sync_state == "new" or (
-                record.sync_state == "done" and not record.active
-            ):
-                continue
-            if record.active:
-                raise UserError(record._msg_cannot_delete_active())
-            else:
-                raise UserError(record._msg_cannot_delete_not_synchronized())
-        return super(SeBinding, self).unlink()
-
-    def _msg_cannot_delete_active(self):
-        return (
-            _("You cannot delete the binding '%s', unactivate it first.")
-            % self.display_name
-        )
-
-    def _msg_cannot_delete_not_synchronized(self):
-        return (
-            _("You cannot delete the binding '%s', wait until it's synchronized.")
-            % self.display_name
-        )
+        to_delete = self.filtered(lambda rec: rec._is_indexed())
+        obsolete_vals_list = [
+            {
+                "index_id": rec.index_id.id,
+                "res_id": rec.id,
+            }
+            for rec in to_delete
+        ]
+        if obsolete_vals_list:
+            self.env["se.index.obsolete.binding"].sudo().create(obsolete_vals_list)
+        return super().unlink()
 
     def jobify_recompute_json(self, force_export=False):
         description = _("Recompute %s json and check if need update" % self._name)
