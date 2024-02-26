@@ -236,10 +236,10 @@ class SeIndex(models.Model):
             item_ids = []
             backend = index.backend_id.specific_backend
             adapter = self._get_backend_adapter(backend=backend, index=index)
-            binding_model = self.env[index.model_id.model]
+            binding_model = self.env[index.model_id.model] # shopinvader.variant
             for index_record in adapter.each():
-                ext_id = adapter.external_id(index_record)
-                binding = binding_model.browse(ext_id).exists()
+                ext_id = adapter.external_id(index_record) # product.product id
+                binding = binding_model.search([("record_id", "=", ext_id)]).exists()
                 if not binding:
                     item_ids.append(ext_id)
             index.with_delay().delete_obsolete_item(item_ids)
